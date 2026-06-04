@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanak — AI Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0f0e0d;
+    --muted: #6b6760;
+    --soft: #f5f2ee;
+    --accent: #d85a30;
+    --accent2: #1d9e75;
+    --border: rgba(15,14,13,0.1);
+    --white: #ffffff;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--soft); color: var(--ink); min-height: 100vh; }
+  .noise { position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity: 0.4; }
+  .page { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+  .tag { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 0.5rem; }
+  .name { font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 800; line-height: 1; color: var(--ink); }
+  .name span { color: var(--accent); }
+  .tagline { margin-top: 0.75rem; font-size: 15px; color: var(--muted); font-weight: 300; max-width: 340px; line-height: 1.6; }
+
+  .ai-badge-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .ai-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--ink); color: var(--white); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; padding: 5px 12px; border-radius: 99px; font-family: 'Syne', sans-serif; }
+  .ai-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; padding-top: 6px; }
+  .age-badge { background: var(--ink); color: var(--white); font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; padding: 6px 14px; border-radius: 99px; }
+  .contact-btn { font-size: 13px; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 6px 14px; border-radius: 99px; font-weight: 500; transition: all 0.2s; }
+  .contact-btn:hover { background: var(--accent); color: #fff; }
+
+  .section-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 1.25rem; }
+
+  .projects { display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 3.5rem; }
+  .project-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start; text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; }
+  .project-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(15,14,13,0.08); }
+
+  .project-type { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; margin-bottom: 6px; }
+  .project-type.app { color: var(--accent2); }
+  .project-type.channel { color: #7f77dd; }
+
+  .project-title { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; color: var(--ink); }
+  .project-desc { font-size: 14px; color: var(--muted); line-height: 1.65; font-weight: 300; }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .pill { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 99px; }
+  .pill.green { background: #eaf3de; color: #3b6d11; }
+  .pill.purple { background: #eeedfe; color: #3c3489; }
+  .pill.coral { background: #faece7; color: #993c1d; }
+  .pill.blue { background: #e6f1fb; color: #185fa5; }
+  .pill.amber { background: #faeeda; color: #854f0b; }
+
+  .project-arrow { font-size: 22px; color: var(--muted); padding-top: 2px; flex-shrink: 0; transition: transform 0.2s, color 0.2s; }
+  .project-card:hover .project-arrow { transform: translate(2px, -2px); color: var(--accent); }
+
+  .yt-card { border-left: 3px solid #7f77dd; }
+  .sub-nudge { margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #534ab7; background: #eeedfe; padding: 5px 12px; border-radius: 99px; }
+  .monetize-badge { margin-top: 8px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #854f0b; background: #faeeda; padding: 5px 12px; border-radius: 99px; }
+
+  .contact-section {}
+  .contact-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .contact-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem 1.2rem; display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-size: 14px; font-weight: 400; transition: border-color 0.2s, background 0.2s; }
+  .contact-card:hover { border-color: var(--accent); background: #faece7; }
+  .contact-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .contact-val { font-size: 14px; font-weight: 500; }
+
+  .footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  .page > * { animation: fadeUp 0.5s ease both; }
+  .header { animation-delay: 0s; }
+  .projects { animation-delay: 0.1s; }
+  .contact-section { animation-delay: 0.2s; }
+  .footer { animation-delay: 0.25s; }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="page">
+
+  <header class="header">
+    <div class="header-left">
+      <div class="tag">AI Portfolio</div>
+      <h1 class="name">Kanak<span>.</span></h1>
+      <p class="tagline">13 years old. Building real things with AI — apps, channels, and whatever comes next.</p>
+      <div class="ai-badge-row">
+        <div class="ai-badge"><div class="ai-dot"></div> Built with AI</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="age-badge">Age 13</div>
+      <a href="mailto:kanaknanglia12@gmail.com" class="contact-btn">Say hello ↗</a>
+    </div>
+  </header>
+
+  <div class="section-label">Projects</div>
+
+  <div class="projects">
+
+    <a href="https://eduflow-os.lovable.app" target="_blank" class="project-card">
+      <div>
+        <div class="project-type app">Web App · Built with AI</div>
+        <div class="project-title">EduFlow OS</div>
+        <p class="project-desc">A full academic operating system for students. Plan your week, manage assignments, run a focus timer, build a weekly timetable, and get reports on your study time and completion rate — all in one place.</p>
+        <div class="project-tags">
+          <span class="pill green">Scheduler</span>
+          <span class="pill blue">Focus Timer</span>
+          <span class="pill coral">Weekly Timetable</span>
+          <span class="pill green">Study Insights</span>
+          <span class="pill purple">Assignments</span>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+    <a href="https://www.youtube.com/@kkc_booknook" target="_blank" class="project-card yt-card">
+      <div>
+        <div class="project-type channel">YouTube Channel · Built with AI</div>
+        <div class="project-title">Kanak's Book Nook</div>
+        <p class="project-desc">A faceless AI-powered YouTube channel creating engaging book content for kids. Fully produced with AI — from scripts to visuals — and on the road to monetization.</p>
+        <div class="project-tags">
+          <span class="pill purple">Faceless Channel</span>
+          <span class="pill blue">Kids Content</span>
+          <span class="pill amber">AI-Generated</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+          <div class="sub-nudge">✦ Subscribe to the channel</div>
+          <div class="monetize-badge">⚡ On the way to monetization</div>
+        </div>
+      </div>
+      <div class="project-arrow">↗</div>
+    </a>
+
+  </div>
+
+  <div class="contact-section">
+    <div class="section-label">Get in touch</div>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:1rem; font-weight:300;">Want to know which AI tools I use? Have a question or just want to say hi? Drop me an email.</p>
+    <div class="contact-row">
+      <a href="mailto:kanaknanglia12@gmail.com" class="contact-card">
+        <span style="font-size:20px;">✉</span>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-val">kanaknanglia12@gmail.com</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>Kanak © 2025</span>
+    <span>Made with AI ✦ curiosity</span>
+  </footer>
+
+</div>
+</body>
+</html>
